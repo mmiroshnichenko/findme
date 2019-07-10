@@ -12,21 +12,23 @@ import javax.servlet.ServletRegistration;
 public class MyWebAppInitializer implements WebApplicationInitializer {
 
     @Override
-    public void onStartup(ServletContext container) throws ServletException {
+    public void onStartup(ServletContext servletContext) throws ServletException {
         // Create the 'root' Spring application context
-        AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        rootContext.register(AppConfig.class);
+        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+        ctx.register(AppConfig.class);
 
         // Manage the lifecycle of the root application context
-        container.addListener(new ContextLoaderListener(rootContext));
+        servletContext.addListener(new ContextLoaderListener(ctx));
+
+        ctx.setServletContext(servletContext);
 
         //Create the dispatcher servlet's Spring application context
-        AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
-        dispatcherContext.register(AppConfig.class);
+//        AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
+//        dispatcherContext.register(AppConfig.class);
 
         // Register and map the dispatcher servlet
-        ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
-        dispatcher.setLoadOnStartup(1);
-        dispatcher.addMapping("/");
+        ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(ctx));
+        servlet.addMapping("/");
+        servlet.setLoadOnStartup(1);
     }
 }
