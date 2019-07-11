@@ -18,9 +18,8 @@ public class PostController {
         this.postService = postService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/post/save", produces = "text/plain")
-    public @ResponseBody
-    String save(Model model, @RequestBody Post post) {
+    @RequestMapping(method = RequestMethod.POST, value = "/post/save", consumes = "application/json", produces = "text/plain")
+    public String save(Model model, @RequestBody Post post) {
         try {
             model.addAttribute("post", postService.save(post));
             return "post";
@@ -33,9 +32,8 @@ public class PostController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/post/update", produces = "text/plain")
-    public @ResponseBody
-    String update(Model model, @RequestBody Post post) {
+    @RequestMapping(method = RequestMethod.PUT, value = "/post/update", consumes = "application/json", produces = "text/plain")
+    public String update(Model model, @RequestBody Post post) {
         try{
             model.addAttribute("post", postService.update(post));
             return "post";
@@ -49,8 +47,7 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/post/delete/{postId}", produces = "text/plain")
-    public @ResponseBody
-    String delete(Model model, @PathVariable String postId) {
+    public String delete(Model model, @PathVariable String postId) {
         try {
             postService.delete(Long.parseLong(postId));
             return "postRemoved";
@@ -64,10 +61,9 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/post/{postId}", produces = "text/plain")
-    public @ResponseBody
-    String get(Model model, @PathVariable String postId) {
+    public String get(Model model, @PathVariable String postId) {
         try {
-            model.addAttribute("user", postService.findById(Long.parseLong(postId)));
+            model.addAttribute("post", postService.findById(Long.parseLong(postId)));
             return "post";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());

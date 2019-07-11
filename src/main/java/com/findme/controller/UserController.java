@@ -17,9 +17,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/user/save")
-    public @ResponseBody
-    String save(Model model, @RequestBody User user) {
+    @RequestMapping(method = RequestMethod.POST, value = "/user/save", consumes = "application/json", produces = "text/plain")
+    public String save(Model model, @RequestBody User user) {
         try {
             model.addAttribute("user", userService.save(user));
             return "profile";
@@ -32,9 +31,8 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/user/update", consumes = "application/json")
-    public @ResponseBody
-    String update(Model model, @RequestBody User user) {
+    @RequestMapping(method = RequestMethod.PUT, value = "/user/update", consumes = "application/json", produces = "text/plain")
+    public String update(Model model, @RequestBody User user) {
         try{
             model.addAttribute("user", userService.update(user));
             return "profile";
@@ -48,8 +46,7 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/user/delete/{userId}", produces = "text/plain")
-    public @ResponseBody
-    String delete(Model model, @PathVariable String userId) {
+    public String delete(Model model, @PathVariable String userId) {
         try {
             userService.delete(Long.parseLong(userId));
             return "profileRemoved";
@@ -62,7 +59,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}")
+    @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}", produces = "text/plain")
     public String get(Model model, @PathVariable String userId) {
         try {
             model.addAttribute("user", userService.findById(Long.parseLong(userId)));

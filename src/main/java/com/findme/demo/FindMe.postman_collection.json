@@ -1,0 +1,273 @@
+{
+	"info": {
+		"_postman_id": "08e62506-a25f-45c6-a40f-bb6b9d30e75f",
+		"name": "FindMe",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "http://localhost:8090/user/save",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "*/*",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"User1\",\n    \"lastName\": \"Userov1\",\n    \"phone\": \"+380954546546\",\n    \"country\": \"Ukraine\",\n    \"city\": \"Kiev\",\n    \"age\": \"38\",\n    \"relationshipStatus\": \"married\",\n    \"religion\": \"katolik\",\n    \"school\": \"school24\",\n    \"university\": \"VNU\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8090/user/save",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"user",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/user/update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "*/*"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": \"2\",\n    \"firstName\": \"User1\",\n    \"lastName\": \"Userov1\",\n    \"phone\": \"+380954546546\",\n    \"country\": \"Ukraine\",\n    \"city\": \"Kiev\",\n    \"age\": \"38\",\n    \"relationshipStatus\": \"married\",\n    \"religion\": \"katolik\",\n    \"school\": \"school24\",\n    \"university\": \"VNU\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8090/user/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"user",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/user/",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/user/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/user/delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/user/delete/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"user",
+								"delete",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post",
+			"item": [
+				{
+					"name": "http://localhost:8090/post/save",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "*/*",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userPosted\": {\n    \"id\": 1\n  },\n  \"message\": \"test message\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8090/post/save",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"post",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/post/update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "*/*"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"userPosted\": {\n    \"id\": 1\n  },\n  \"message\": \"test message edited\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8090/post/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"post",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/post/",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/post/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"post",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/post/delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/post/delete/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"post",
+								"delete",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -17,7 +17,7 @@ public class MessageController {
         this.messageService = messageService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/message/save", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.POST, value = "/message/save", consumes = "application/json", produces = "text/plain")
     public @ResponseBody
     String save(Model model, @RequestBody Message message) {
         try {
@@ -32,7 +32,7 @@ public class MessageController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/message/update", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.PUT, value = "/message/update", consumes = "application/json", produces = "text/plain")
     public @ResponseBody
     String update(Model model, @RequestBody Message message) {
         try{
