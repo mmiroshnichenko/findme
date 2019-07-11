@@ -17,7 +17,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/user/save", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.POST, value = "/user/save")
     public @ResponseBody
     String save(Model model, @RequestBody User user) {
         try {
@@ -32,7 +32,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/user/update", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.PUT, value = "/user/update", consumes = "application/json")
     public @ResponseBody
     String update(Model model, @RequestBody User user) {
         try{
@@ -62,9 +62,8 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}", produces = "text/plain")
-    public @ResponseBody
-    String get(Model model, @PathVariable String userId) {
+    @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}")
+    public String get(Model model, @PathVariable String userId) {
         try {
             model.addAttribute("user", userService.findById(Long.parseLong(userId)));
             return "profile";

@@ -25,7 +25,7 @@ public class User {
     private String school;
     private String university;
 
-    //private String[] interests;
+//    //private String[] interests;
     private List<Message> messagesSent;
     private List<Message> messagesReceived;
 
@@ -157,6 +157,14 @@ public class User {
 
     public void setUniversity(String university) {
         this.university = university;
+    }
+
+    public void setMessagesSent(List<Message> messagesSent) {
+        this.messagesSent = messagesSent;
+    }
+
+    public void setMessagesReceived(List<Message> messagesReceived) {
+        this.messagesReceived = messagesReceived;
     }
 
     @Override
