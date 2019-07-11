@@ -12,6 +12,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -24,6 +25,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableWebMvc
+@EnableTransactionManagement
 @ComponentScan(basePackages = {"com"})
 public class AppConfig implements WebMvcConfigurer {
     @Autowired
@@ -57,7 +59,7 @@ public class AppConfig implements WebMvcConfigurer {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[]{"com"});
+        em.setPackagesToScan("com");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
@@ -91,6 +93,7 @@ public class AppConfig implements WebMvcConfigurer {
     public Properties additionalProperties() {
         Properties properties =new Properties();
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
+        properties.setProperty("hibernate.show_sql", "true");
         return properties;
     }
 }

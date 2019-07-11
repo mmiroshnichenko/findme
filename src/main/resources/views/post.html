@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Post</title>
+</head>
+<body>
+<!--    <div th:replace="fragments/header :: header"/>-->
+<h3>Post</h3>
+<div>
+    <p th:text="${post.message}"></p>
+    <p th:text="${post.datePosted}"></p>
+    <p th:text="${post.userPosted.firstName}"></p>
+    <p th:text="${post.userPosted.lastName}"></p>
+</div>
+
+<!-- /.container -->
+<!---->
+<!--<div th:replace=""fragments/>footer :: footer" />-->
+</body>
+</html>

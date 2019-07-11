@@ -3,8 +3,7 @@ package com.findme.dao;
 
 import com.findme.models.User;
 import org.springframework.stereotype.Repository;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional

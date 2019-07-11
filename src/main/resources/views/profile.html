@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Find me</title>
+    <title>User profile</title>
 </head>
 <body>
 <!--    <div th:replace="fragments/header :: header"/>-->
@@ -16,7 +16,17 @@
     </div>
     <div class="right">
         <p th:text="${user.firstName}"></p>
+        <p th:text="${user.lastName}"></p>
+        <p th:text="${user.phone}"></p>
+        <p th:text="${user.country}"></p>
         <p th:text="${user.city}"></p>
+        <p th:text="${user.age}"></p>
+        <p th:text="${user.dateRegistered}"></p>
+<!--        <p th:text="${user.dateRegistered}"></p>-->
+        <p th:text="${user.relationshipStatus}"></p>
+        <p th:text="${user.religion}"></p>
+        <p th:text="${user.school}"></p>
+        <p th:text="${user.university}"></p>
     </div>
 
 <!-- /.container -->

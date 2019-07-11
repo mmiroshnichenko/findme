@@ -1,28 +1,29 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
-import com.findme.models.User;
-import com.findme.service.UserService;
+import com.findme.models.Post;
+import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class UserController {
-    private UserService userService;
+public class PostController {
+
+    private PostService postService;
 
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/user/save", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.POST, value = "/post/save", produces = "text/plain")
     public @ResponseBody
-    String save(Model model, @RequestBody User user) {
+    String save(Model model, @RequestBody Post post) {
         try {
-            model.addAttribute("user", userService.save(user));
-            return "profile";
+            model.addAttribute("post", postService.save(post));
+            return "post";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
@@ -32,12 +33,12 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/user/update", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.PUT, value = "/post/update", produces = "text/plain")
     public @ResponseBody
-    String update(Model model, @RequestBody User user) {
+    String update(Model model, @RequestBody Post post) {
         try{
-            model.addAttribute("user", userService.update(user));
-            return "profile";
+            model.addAttribute("post", postService.update(post));
+            return "post";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
@@ -47,12 +48,12 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/user/delete/{userId}", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/post/delete/{postId}", produces = "text/plain")
     public @ResponseBody
-    String delete(Model model, @PathVariable String userId) {
+    String delete(Model model, @PathVariable String postId) {
         try {
-            userService.delete(Long.parseLong(userId));
-            return "profileRemoved";
+            postService.delete(Long.parseLong(postId));
+            return "postRemoved";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
@@ -62,12 +63,12 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.GET, value = "/post/{postId}", produces = "text/plain")
     public @ResponseBody
-    String get(Model model, @PathVariable String userId) {
+    String get(Model model, @PathVariable String postId) {
         try {
-            model.addAttribute("user", userService.findById(Long.parseLong(userId)));
-            return "profile";
+            model.addAttribute("user", postService.findById(Long.parseLong(postId)));
+            return "post";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";

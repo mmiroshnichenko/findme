@@ -1,28 +1,28 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
-import com.findme.models.User;
-import com.findme.service.UserService;
+import com.findme.models.Message;
+import com.findme.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class UserController {
-    private UserService userService;
+public class MessageController {
+    private MessageService messageService;
 
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public MessageController(MessageService messageService) {
+        this.messageService = messageService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/user/save", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.POST, value = "/message/save", produces = "text/plain")
     public @ResponseBody
-    String save(Model model, @RequestBody User user) {
+    String save(Model model, @RequestBody Message message) {
         try {
-            model.addAttribute("user", userService.save(user));
-            return "profile";
+            model.addAttribute("message", messageService.save(message));
+            return "message";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
@@ -32,12 +32,12 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/user/update", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.PUT, value = "/message/update", produces = "text/plain")
     public @ResponseBody
-    String update(Model model, @RequestBody User user) {
+    String update(Model model, @RequestBody Message message) {
         try{
-            model.addAttribute("user", userService.update(user));
-            return "profile";
+            model.addAttribute("message", messageService.update(message));
+            return "message";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
@@ -47,12 +47,12 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/user/delete/{userId}", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/message/delete/{messageId}", produces = "text/plain")
     public @ResponseBody
-    String delete(Model model, @PathVariable String userId) {
+    String delete(Model model, @PathVariable String messageId) {
         try {
-            userService.delete(Long.parseLong(userId));
-            return "profileRemoved";
+            messageService.delete(Long.parseLong(messageId));
+            return "messageRemoved";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
@@ -62,12 +62,12 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.GET, value = "/message/get/{messageId}", produces = "text/plain")
     public @ResponseBody
-    String get(Model model, @PathVariable String userId) {
+    String get(Model model, @PathVariable String messageId) {
         try {
-            model.addAttribute("user", userService.findById(Long.parseLong(userId)));
-            return "profile";
+            model.addAttribute("message", messageService.findById(Long.parseLong(messageId)));
+            return "message";
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";

@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Message</title>
+</head>
+<body>
+<!--    <div th:replace="fragments/header :: header"/>-->
+<h3>Message</h3>
+<div>
+    <p th:text="${post.text}"></p>
+    <p th:text="${post.dateSent}"></p>
+<!--    <p th:text="${post.dateRead}"></p>-->
+    <p th:text="${post.userFrom.firstName}"></p>
+    <p th:text="${post.userFrom.lastName}"></p>
+    <p th:text="${post.userTo.firstName}"></p>
+    <p th:text="${post.userTo.lastName}"></p>
+</div>
+
+<!-- /.container -->
+<!---->
+<!--<div th:replace=""fragments/>footer :: footer" />-->
+</body>
+</html>
