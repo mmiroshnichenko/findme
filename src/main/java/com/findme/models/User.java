@@ -1,5 +1,8 @@
 package com.findme.models;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +14,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String phone;
+    private String email;
+    private String password;
     //TODO from existed data
     private String country;
     private String city;
@@ -50,6 +55,16 @@ public class User {
     @Column(name = "PHONE")
     public String getPhone() {
         return phone;
+    }
+
+    @Column(name = "EMAIL")
+    public String getEmail() {
+        return email;
+    }
+
+    @Column(name = "PASSWORD")
+    public String getPassword() {
+        return password;
     }
 
     @Column(name = "COUNTRY")
@@ -97,12 +112,14 @@ public class User {
         return university;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "userFrom")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userFrom")
     public List<Message> getMessagesSent() {
         return messagesSent;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "userTo")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userTo")
     public List<Message> getMessagesReceived() {
         return messagesReceived;
     }
@@ -121,6 +138,14 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setCountry(String country) {

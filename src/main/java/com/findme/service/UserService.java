@@ -20,18 +20,20 @@ public class UserService {
     }
 
     public User save(User user) throws Exception {
-        validate(user);
+        validateRegistration(user);
         user.setDateRegistered(new Date());
 
         return userDAO.save(user);
     }
 
     public User update(User user) throws Exception {
-        validate(user);
+        validateUser(user);
         User userDb = findById(user.getId());
         userDb.setFirstName(user.getFirstName());
         userDb.setLastName(user.getLastName());
         userDb.setPhone(user.getPhone());
+        userDb.setEmail(user.getEmail());
+        userDb.setPassword(user.getPassword());
         userDb.setCountry(user.getCountry());
         userDb.setCity(user.getCity());
         userDb.setAge(user.getAge());
@@ -56,7 +58,7 @@ public class UserService {
         return user;
     }
 
-    private void validate(User user) throws BadRequestException {
+    private void validateUser(User user) throws BadRequestException {
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
             throw new BadRequestException("Error: first name is required");
         }
@@ -65,6 +67,20 @@ public class UserService {
         }
         if (user.getPhone() == null || user.getPhone().isEmpty()) {
             throw new BadRequestException("Error: phone is required");
+        }
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            throw new BadRequestException("Error: email is required");
+        }
+    }
+
+    private void validateRegistration(User user) throws BadRequestException {
+        validateUser(user);
+
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new BadRequestException("Error: password is required");
+        }
+        if (userDAO.getUserByEmailOrPhone(user.getEmail(), user.getPhone()).size() > 0) {
+            throw new BadRequestException("Error: users with entered email or password already exist");
         }
     }
 }

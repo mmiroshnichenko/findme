@@ -4,6 +4,8 @@ import com.findme.exception.BadRequestException;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,45 +19,40 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/user/save", consumes = "application/json", produces = "text/plain")
-    public String save(Model model, @RequestBody User user) {
+//    @RequestMapping(method = RequestMethod.POST, value = "/user/save", consumes = "application/json", produces = "text/plain")
+//    public String save(Model model, @RequestBody User user) {
+//        try {
+//            model.addAttribute("user", userService.save(user));
+//            return "profile";
+//        } catch (BadRequestException e) {
+//            model.addAttribute("errorMessage", e.getMessage());
+//            return "errors/badRequest";
+//        } catch (Exception e) {
+//            model.addAttribute("errorMessage", e.getMessage());
+//            return "errors/internalError";
+//        }
+//    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/user/update", consumes = "application/json")
+    public ResponseEntity<?> update(@RequestBody User user) {
         try {
-            model.addAttribute("user", userService.save(user));
-            return "profile";
+            return new ResponseEntity<User>(userService.update(user), HttpStatus.OK);
         } catch (BadRequestException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/internalError";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/user/update", consumes = "application/json", produces = "text/plain")
-    public String update(Model model, @RequestBody User user) {
-        try{
-            model.addAttribute("user", userService.update(user));
-            return "profile";
-        } catch (BadRequestException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/internalError";
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.DELETE, value = "/user/delete/{userId}", produces = "text/plain")
-    public String delete(Model model, @PathVariable String userId) {
+    @RequestMapping(method = RequestMethod.DELETE, value = "/user/delete/{userId}")
+    public ResponseEntity<String> delete(@PathVariable String userId) {
         try {
             userService.delete(Long.parseLong(userId));
-            return "profileRemoved";
+            return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (BadRequestException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/internalError";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -70,6 +67,17 @@ public class UserController {
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/internalError";
+        }
+    }
+
+    @RequestMapping(path = "/register-user", method = RequestMethod.POST)
+    public ResponseEntity<?> registerUser(@ModelAttribute User user) {
+        try {
+            return new ResponseEntity<User>(userService.save(user), HttpStatus.OK);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -10,9 +10,68 @@
 <h1>Welcome to Find me!</h1>
 Some text
 
+<form id="registration-form">
+    <p>First name: <input type="text" name="firstName"/></p>
+    <p>Last name: <input type="text" name="lastName"/></p>
+    <p>Phone: <input type="text" name="phone"/></p>
+    <p>Email: <input type="text" name="email"/></p>
+    <p>Password: <input type="password" name="password"/></p>
+    <p>Country: <input type="text" name="country"/></p>
+    <p>City: <input type="text" name="city"/></p>
+    <p>Age: <input type="text" name="age"/></p>
+    <p>Relationship status: <select name="relationshipStatus">
+        <option value="single">Single</option>
+        <option value="married">Married</option>
+    </select></p>
+    <p>Religion: <input type="text" name="religion"/></p>
+    <p>School: <input type="text" name="school"/></p>
+    <p>University: <input type="text" name="university"/></p>
+
+    <button type="submit">Register</button>
+</form>
+
+<button id="test-ajax">Click here!</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!-- /.container -->
 <!---->
 <!--<div th:replace=""fragments/>footer :: footer" />-->
 </body>
 <footer>Footer</footer>
+<script>
+    //alert($("#test-ajax").text());
+
+    $("#test-ajax").click(function () {
+        //debugger;
+        $.ajax({
+            type: "GET",
+            url: "/test-ajax",
+            data: {
+            },
+            success: function success() {
+                debugger;
+                alert("success!");
+            },
+            error: function error(xhr) {
+                debugger;
+                alert("error!");
+            }
+        });
+    });
+
+    $("#registration-form").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "register-user",
+            type: "POST",
+            data: $('#registration-form').serialize(),
+            success: function success(data) {
+                window.location.href = "/user/" + data['id'];
+            },
+            error: function error(xhr) {
+                console.log(xhr);
+            }
+        });
+    });
+</script>
 </html>

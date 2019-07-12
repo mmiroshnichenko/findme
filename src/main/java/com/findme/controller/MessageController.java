@@ -4,6 +4,8 @@ import com.findme.exception.BadRequestException;
 import com.findme.models.Message;
 import com.findme.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,48 +19,37 @@ public class MessageController {
         this.messageService = messageService;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/message/save", consumes = "application/json", produces = "text/plain")
-    public @ResponseBody
-    String save(Model model, @RequestBody Message message) {
+    @RequestMapping(path = "/message/save", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity<?> save(@RequestBody Message message) {
         try {
-            model.addAttribute("message", messageService.save(message));
-            return "message";
+            return new ResponseEntity<Message>(messageService.save(message), HttpStatus.OK);
         } catch (BadRequestException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/internalError";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/message/update", consumes = "application/json", produces = "text/plain")
-    public @ResponseBody
-    String update(Model model, @RequestBody Message message) {
-        try{
-            model.addAttribute("message", messageService.update(message));
-            return "message";
+    @RequestMapping(method = RequestMethod.PUT, value = "/message/update", consumes = "application/json")
+    public ResponseEntity<?> update(@RequestBody Message message) {
+        try {
+            return new ResponseEntity<Message>(messageService.update(message), HttpStatus.OK);
         } catch (BadRequestException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/internalError";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/message/delete/{messageId}", produces = "text/plain")
-    public @ResponseBody
-    String delete(Model model, @PathVariable String messageId) {
+    @RequestMapping(method = RequestMethod.DELETE, value = "/message/delete/{messageId}")
+    public ResponseEntity<String> delete(@PathVariable String messageId) {
         try {
             messageService.delete(Long.parseLong(messageId));
-            return "messageRemoved";
+            return new ResponseEntity<String>("message deleted", HttpStatus.OK);
         } catch (BadRequestException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "errors/internalError";
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
