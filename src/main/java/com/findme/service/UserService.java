@@ -79,7 +79,7 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             throw new BadRequestException("Error: password is required");
         }
-        if (userDAO.getUserByEmailOrPhone(user.getEmail(), user.getPhone()).size() > 0) {
+        if (!userDAO.checkUniqueEmailAndPhone(user.getEmail(), user.getPhone())) {
             throw new BadRequestException("Error: users with entered email or password already exist");
         }
     }

@@ -27,6 +27,8 @@ Some text
     <p>School: <input type="text" name="school"/></p>
     <p>University: <input type="text" name="university"/></p>
 
+    <div class="error"></div>
+
     <button type="submit">Register</button>
 </form>
 
@@ -38,6 +40,12 @@ Some text
 <!--<div th:replace=""fragments/>footer :: footer" />-->
 </body>
 <footer>Footer</footer>
+<style>
+    .error {
+        display: none;
+        color: red;
+    }
+</style>
 <script>
     //alert($("#test-ajax").text());
 
@@ -66,10 +74,13 @@ Some text
             type: "POST",
             data: $('#registration-form').serialize(),
             success: function success(data) {
+                $(".error").hide();
                 window.location.href = "/user/" + data['id'];
             },
             error: function error(xhr) {
-                console.log(xhr);
+                $(".error").text(xhr.responseText);
+                $(".error").show();
+
             }
         });
     });

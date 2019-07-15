@@ -19,7 +19,7 @@ public class UserDAO extends BaseDAO<User> {
         super(User.class);
     }
 
-    public List<User> getUserByEmailOrPhone(String email, String phone) {
+    public boolean checkUniqueEmailAndPhone(String email, String phone) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> root = criteriaQuery.from(User.class);
@@ -31,6 +31,11 @@ public class UserDAO extends BaseDAO<User> {
 
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[predicates.size()]));
 
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        List<User> userList = entityManager.createQuery(criteriaQuery).getResultList();
+        if (userList != null && userList.size() > 0) {
+            return false;
+        }
+
+        return true;
     }
 }
