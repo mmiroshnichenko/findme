@@ -2,15 +2,14 @@ package com.findme.service;
 
 import com.findme.dao.MessageDAO;
 import com.findme.exception.BadRequestException;
+import com.findme.exception.NotFoundException;
 import com.findme.models.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
 @Service
-@Transactional
 public class MessageService {
     private MessageDAO messageDAO;
     private UserService userService;
@@ -32,29 +31,29 @@ public class MessageService {
 
     public Message update(Message message) throws Exception {
         validate(message);
+        message.setUserFrom(userService.findById(message.getUserFrom().getId()));
+        message.setUserTo(userService.findById(message.getUserTo().getId()));
 
-        Message messageDb = findById(message.getId());
-        messageDb.setText(message.getText());
-        messageDb.setUserFrom(userService.findById(message.getUserFrom().getId()));
-        messageDb.setUserTo(userService.findById(message.getUserTo().getId()));
-
-        return messageDAO.update(messageDb);
+        return messageDAO.update(message);
     }
 
     public void delete(long id) throws Exception {
         messageDAO.delete(findById(id));
     }
 
-    public Message findById(long id) throws Exception{
+    public Message findById(long id) throws NotFoundException{
         Message message = messageDAO.findById(id);
         if (message == null) {
-            throw new BadRequestException("Error: message(id: " + id + ") was not found");
+            throw new NotFoundException("Error: message(id: " + id + ") was not found");
         }
 
         return message;
     }
 
-    private void validate(Message message) throws BadRequestException {
+    private void validate(Message message) throws Exception {
+        if (message.getId() != null) {
+            findById(message.getId());
+        }
         if (message.getText() == null || message.getText().isEmpty()) {
             throw new BadRequestException("Error: text is required");
         }

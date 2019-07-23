@@ -1,6 +1,7 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
+import com.findme.exception.NotFoundException;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ public class UserController {
     public ResponseEntity<?> update(@RequestBody User user) {
         try {
             return new ResponseEntity<User>(userService.update(user), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -49,6 +52,8 @@ public class UserController {
         try {
             userService.delete(Long.parseLong(userId));
             return new ResponseEntity<String>("ok", HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -61,9 +66,9 @@ public class UserController {
         try {
             model.addAttribute("user", userService.findById(Long.parseLong(userId)));
             return "profile";
-        } catch (BadRequestException e) {
+        } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
+            return "errors/notFound";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/internalError";
@@ -74,6 +79,8 @@ public class UserController {
     public ResponseEntity<?> registerUser(@ModelAttribute User user) {
         try {
             return new ResponseEntity<User>(userService.save(user), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

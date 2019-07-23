@@ -2,15 +2,14 @@ package com.findme.service;
 
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
+import com.findme.exception.NotFoundException;
 import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
 @Service
-@Transactional
 public class UserService {
     private UserDAO userDAO;
 
@@ -28,37 +27,26 @@ public class UserService {
 
     public User update(User user) throws Exception {
         validateUser(user);
-        User userDb = findById(user.getId());
-        userDb.setFirstName(user.getFirstName());
-        userDb.setLastName(user.getLastName());
-        userDb.setPhone(user.getPhone());
-        userDb.setEmail(user.getEmail());
-        userDb.setPassword(user.getPassword());
-        userDb.setCountry(user.getCountry());
-        userDb.setCity(user.getCity());
-        userDb.setAge(user.getAge());
-        userDb.setRelationshipStatus(user.getRelationshipStatus());
-        userDb.setReligion(user.getReligion());
-        userDb.setSchool(user.getSchool());
-        userDb.setUniversity(user.getUniversity());
-
-        return userDAO.update(userDb);
+        return userDAO.update(user);
     }
 
     public void delete(long id) throws Exception {
         userDAO.delete(findById(id));
     }
 
-    public User findById(long id) throws Exception{
+    public User findById(long id) throws NotFoundException{
         User user = userDAO.findById(id);
         if (user == null) {
-            throw new BadRequestException("Error: user(id: " + id + ") was not found");
+            throw new NotFoundException("Error: user(id: " + id + ") was not found");
         }
 
         return user;
     }
 
-    private void validateUser(User user) throws BadRequestException {
+    private void validateUser(User user) throws Exception {
+        if (user.getId() != null) {
+            findById(user.getId());
+        }
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
             throw new BadRequestException("Error: first name is required");
         }
@@ -73,14 +61,14 @@ public class UserService {
         }
     }
 
-    private void validateRegistration(User user) throws BadRequestException {
+    private void validateRegistration(User user) throws Exception {
         validateUser(user);
 
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             throw new BadRequestException("Error: password is required");
         }
         if (!userDAO.checkUniqueEmailAndPhone(user.getEmail(), user.getPhone())) {
-            throw new BadRequestException("Error: users with entered email or password already exist");
+            throw new BadRequestException("Error: users with entered email or phone already exist");
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
+import com.findme.exception.NotFoundException;
 import com.findme.models.Message;
 import com.findme.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class MessageController {
     public ResponseEntity<?> save(@RequestBody Message message) {
         try {
             return new ResponseEntity<Message>(messageService.save(message), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -34,6 +37,8 @@ public class MessageController {
     public ResponseEntity<?> update(@RequestBody Message message) {
         try {
             return new ResponseEntity<Message>(messageService.update(message), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -46,6 +51,8 @@ public class MessageController {
         try {
             messageService.delete(Long.parseLong(messageId));
             return new ResponseEntity<String>("message deleted", HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -59,9 +66,9 @@ public class MessageController {
         try {
             model.addAttribute("message", messageService.findById(Long.parseLong(messageId)));
             return "message";
-        } catch (BadRequestException e) {
+        } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
+            return "errors/notFound";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/internalError";

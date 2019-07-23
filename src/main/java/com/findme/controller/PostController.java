@@ -1,6 +1,7 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
+import com.findme.exception.NotFoundException;
 import com.findme.models.Post;
 import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class PostController {
     public ResponseEntity<?> save(@RequestBody Post post) {
         try {
             return new ResponseEntity<Post>(postService.save(post), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -35,6 +38,8 @@ public class PostController {
     public ResponseEntity<?> update(@RequestBody Post post) {
         try {
             return new ResponseEntity<Post>(postService.update(post), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -47,6 +52,8 @@ public class PostController {
         try {
             postService.delete(Long.parseLong(postId));
             return new ResponseEntity<String>("post deleted", HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -59,9 +66,9 @@ public class PostController {
         try {
             model.addAttribute("post", postService.findById(Long.parseLong(postId)));
             return "post";
-        } catch (BadRequestException e) {
+        } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "errors/badRequest";
+            return "errors/notFound";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/internalError";
