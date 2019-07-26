@@ -1,9 +1,9 @@
-package com.findme.controller;
+package com.findme.helper;
 
 import com.findme.exception.BadRequestException;
 
-public class BaseController {
-    protected Long parseLongArgument(String id) throws BadRequestException {
+public class ArgumentHelper {
+    public Long parseLongArgument(String id) throws BadRequestException {
         try {
             return Long.parseLong(id);
         } catch (NumberFormatException e) {

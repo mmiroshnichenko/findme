@@ -2,6 +2,7 @@ package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
+import com.findme.helper.ArgumentHelper;
 import com.findme.models.Message;
 import com.findme.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +13,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class MessageController extends BaseController {
+public class MessageController {
     private MessageService messageService;
+    private ArgumentHelper argumentHelper;
 
     @Autowired
-    public MessageController(MessageService messageService) {
+    public MessageController(MessageService messageService, ArgumentHelper argumentHelper) {
         this.messageService = messageService;
+        this.argumentHelper = argumentHelper;
     }
 
     @RequestMapping(path = "/message/save", method = RequestMethod.POST, consumes = "application/json")
@@ -49,7 +52,7 @@ public class MessageController extends BaseController {
     @RequestMapping(method = RequestMethod.DELETE, value = "/message/delete/{messageId}")
     public ResponseEntity<String> delete(@PathVariable String messageId) {
         try {
-            messageService.delete(parseLongArgument(messageId));
+            messageService.delete(argumentHelper.parseLongArgument(messageId));
             return new ResponseEntity<String>("message deleted", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -64,7 +67,7 @@ public class MessageController extends BaseController {
     public @ResponseBody
     String get(Model model, @PathVariable String messageId) {
         try {
-            model.addAttribute("message", messageService.findById(parseLongArgument(messageId)));
+            model.addAttribute("message", messageService.findById(argumentHelper.parseLongArgument(messageId)));
             return "message";
         } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());

@@ -2,6 +2,7 @@ package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
+import com.findme.helper.ArgumentHelper;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +13,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class UserController extends BaseController {
+public class UserController {
     private UserService userService;
+    private ArgumentHelper argumentHelper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ArgumentHelper argumentHelper) {
         this.userService = userService;
+        this.argumentHelper = argumentHelper;
     }
-
-//    @RequestMapping(method = RequestMethod.POST, value = "/user/save", consumes = "application/json", produces = "text/plain")
-//    public String save(Model model, @RequestBody User user) {
-//        try {
-//            model.addAttribute("user", userService.save(user));
-//            return "profile";
-//        } catch (BadRequestException e) {
-//            model.addAttribute("errorMessage", e.getMessage());
-//            return "errors/badRequest";
-//        } catch (Exception e) {
-//            model.addAttribute("errorMessage", e.getMessage());
-//            return "errors/internalError";
-//        }
-//    }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/user/update", consumes = "application/json")
     public ResponseEntity<?> update(@RequestBody User user) {
@@ -50,7 +39,7 @@ public class UserController extends BaseController {
     @RequestMapping(method = RequestMethod.DELETE, value = "/user/delete/{userId}")
     public ResponseEntity<String> delete(@PathVariable String userId) {
         try {
-            userService.delete(parseLongArgument(userId));
+            userService.delete(argumentHelper.parseLongArgument(userId));
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -64,7 +53,7 @@ public class UserController extends BaseController {
     @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}", produces = "text/plain")
     public String get(Model model, @PathVariable String userId) {
         try {
-            model.addAttribute("user", userService.findById(parseLongArgument(userId)));
+            model.addAttribute("user", userService.findById(argumentHelper.parseLongArgument(userId)));
             return "profile";
         } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
