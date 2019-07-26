@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class UserController {
+public class UserController extends BaseController {
     private UserService userService;
 
     @Autowired
@@ -50,7 +50,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.DELETE, value = "/user/delete/{userId}")
     public ResponseEntity<String> delete(@PathVariable String userId) {
         try {
-            userService.delete(Long.parseLong(userId));
+            userService.delete(parseLongArgument(userId));
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -64,12 +64,12 @@ public class UserController {
     @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}", produces = "text/plain")
     public String get(Model model, @PathVariable String userId) {
         try {
-            model.addAttribute("user", userService.findById(Long.parseLong(userId)));
+            model.addAttribute("user", userService.findById(parseLongArgument(userId)));
             return "profile";
         } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/notFound";
-        } catch (BadRequestException | NumberFormatException e) {
+        } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
         } catch (Exception e) {

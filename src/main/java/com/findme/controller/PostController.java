@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class PostController {
+public class PostController extends BaseController {
 
     private PostService postService;
 
@@ -50,7 +50,7 @@ public class PostController {
     @RequestMapping(method = RequestMethod.DELETE, value = "/post/delete/{postId}")
     public ResponseEntity<String> delete(@PathVariable String postId) {
         try {
-            postService.delete(Long.parseLong(postId));
+            postService.delete(parseLongArgument(postId));
             return new ResponseEntity<String>("post deleted", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -64,7 +64,7 @@ public class PostController {
     @RequestMapping(method = RequestMethod.GET, value = "/post/{postId}", produces = "text/plain")
     public String get(Model model, @PathVariable String postId) {
         try {
-            model.addAttribute("post", postService.findById(Long.parseLong(postId)));
+            model.addAttribute("post", postService.findById(parseLongArgument(postId)));
             return "post";
         } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
