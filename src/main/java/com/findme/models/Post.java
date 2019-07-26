@@ -1,15 +1,18 @@
 package com.findme.models;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "POST")
+@Getter
+@Setter
+@ToString
 public class Post {
-    private Long id;
-    private String message;
-    private Date datePosted;
-    private User userPosted;
 
     //TODO
     //levels permissions
@@ -21,49 +24,15 @@ public class Post {
     @SequenceGenerator(name = "POST_SEQ", sequenceName = "POST_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "POST_SEQ")
     @Column(name = "ID")
-    public Long getId() {
-        return id;
-    }
+    private Long id;
 
     @Column(name = "MESSAGE")
-    public String getMessage() {
-        return message;
-    }
+    private String message;
 
     @Column(name = "DATE_POSTED")
-    public Date getDatePosted() {
-        return datePosted;
-    }
+    private Date datePosted;
 
     @ManyToOne
     @JoinColumn(name = "USER_POSTED_ID", nullable = false)
-    public User getUserPosted() {
-        return userPosted;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setDatePosted(Date datePosted) {
-        this.datePosted = datePosted;
-    }
-
-    public void setUserPosted(User userPosted) {
-        this.userPosted = userPosted;
-    }
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", message='" + message + '\'' +
-                ", datePosted=" + datePosted +
-                ", userPosted=" + userPosted.getId() +
-                '}';
-    }
+    private User userPosted;
 }

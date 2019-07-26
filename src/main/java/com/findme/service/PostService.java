@@ -6,10 +6,12 @@ import com.findme.exception.NotFoundException;
 import com.findme.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
 @Service
+@Transactional
 public class PostService {
     private PostDAO postDAO;
     private UserService userService;
@@ -39,7 +41,10 @@ public class PostService {
         postDAO.delete(findById(id));
     }
 
-    public Post findById(long id) throws NotFoundException{
+    public Post findById(long id) throws Exception{
+        if (id <= 0) {
+            throw new BadRequestException("Error: incorrect id: " + id);
+        }
         Post post = postDAO.findById(id);
         if (post == null) {
             throw new NotFoundException("Error: post(id: " + id + ") was not found");

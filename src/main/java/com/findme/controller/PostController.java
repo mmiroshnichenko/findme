@@ -69,6 +69,9 @@ public class PostController {
         } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/notFound";
+        } catch (BadRequestException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/badRequest";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/internalError";

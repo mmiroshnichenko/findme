@@ -6,10 +6,12 @@ import com.findme.exception.NotFoundException;
 import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
 @Service
+@Transactional
 public class UserService {
     private UserDAO userDAO;
 
@@ -34,7 +36,10 @@ public class UserService {
         userDAO.delete(findById(id));
     }
 
-    public User findById(long id) throws NotFoundException{
+    public User findById(long id) throws Exception{
+        if (id <= 0) {
+            throw new BadRequestException("Error: incorrect id: " + id);
+        }
         User user = userDAO.findById(id);
         if (user == null) {
             throw new NotFoundException("Error: user(id: " + id + ") was not found");

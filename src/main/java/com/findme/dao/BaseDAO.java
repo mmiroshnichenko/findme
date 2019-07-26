@@ -1,8 +1,11 @@
 package com.findme.dao;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+@Transactional
 public class BaseDAO <T> {
     private Class<T> typeOfT;
 
@@ -26,7 +29,7 @@ public class BaseDAO <T> {
     }
 
     public void delete(T object) {
-        entityManager.remove(entityManager.contains(object) ? object : entityManager.merge(object));
+        entityManager.remove(object);
     }
 
     public T findById(long id) {

@@ -6,10 +6,12 @@ import com.findme.exception.NotFoundException;
 import com.findme.models.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
 @Service
+@Transactional
 public class MessageService {
     private MessageDAO messageDAO;
     private UserService userService;
@@ -41,7 +43,10 @@ public class MessageService {
         messageDAO.delete(findById(id));
     }
 
-    public Message findById(long id) throws NotFoundException{
+    public Message findById(long id) throws Exception{
+        if (id <= 0) {
+            throw new BadRequestException("Error: incorrect id: " + id);
+        }
         Message message = messageDAO.findById(id);
         if (message == null) {
             throw new NotFoundException("Error: message(id: " + id + ") was not found");
