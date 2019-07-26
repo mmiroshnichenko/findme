@@ -69,7 +69,7 @@ public class MessageController {
         } catch (NotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/notFound";
-        } catch (BadRequestException e) {
+        } catch (BadRequestException | NumberFormatException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
         } catch (Exception e) {
