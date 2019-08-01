@@ -42,9 +42,6 @@ public class PostService {
     }
 
     public Post findById(long id) throws Exception{
-        if (id <= 0) {
-            throw new BadRequestException("Error: incorrect id: " + id);
-        }
         Post post = postDAO.findById(id);
         if (post == null) {
             throw new NotFoundException("Error: post(id: " + id + ") was not found");

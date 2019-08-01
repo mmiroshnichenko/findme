@@ -25,9 +25,10 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/save", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<?> save(@RequestBody Post post) {
+    public ResponseEntity<String> save(@RequestBody Post post) {
         try {
-            return new ResponseEntity<Post>(postService.save(post), HttpStatus.OK);
+            postService.save(post);
+            return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
@@ -38,9 +39,10 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/post/update", consumes = "application/json")
-    public ResponseEntity<?> update(@RequestBody Post post) {
+    public ResponseEntity<String> update(@RequestBody Post post) {
         try {
-            return new ResponseEntity<Post>(postService.update(post), HttpStatus.OK);
+            postService.update(post);
+            return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {

@@ -44,9 +44,6 @@ public class MessageService {
     }
 
     public Message findById(long id) throws Exception{
-        if (id <= 0) {
-            throw new BadRequestException("Error: incorrect id: " + id);
-        }
         Message message = messageDAO.findById(id);
         if (message == null) {
             throw new NotFoundException("Error: message(id: " + id + ") was not found");

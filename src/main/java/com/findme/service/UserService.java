@@ -37,9 +37,6 @@ public class UserService {
     }
 
     public User findById(long id) throws Exception{
-        if (id <= 0) {
-            throw new BadRequestException("Error: incorrect id: " + id);
-        }
         User user = userDAO.findById(id);
         if (user == null) {
             throw new NotFoundException("Error: user(id: " + id + ") was not found");
@@ -50,7 +47,7 @@ public class UserService {
 
     private void validateUser(User user) throws Exception {
         if (user.getId() != null) {
-            findById(user.getId());
+           // findById(user.getId());
         }
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
             throw new BadRequestException("Error: first name is required");
@@ -72,7 +69,7 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             throw new BadRequestException("Error: password is required");
         }
-        if (!userDAO.checkUniqueEmailAndPhone(user.getEmail(), user.getPhone())) {
+        if (userDAO.countUsersWithEmailOrPhone(user.getEmail(), user.getPhone()) > 0) {
             throw new BadRequestException("Error: users with entered email or phone already exist");
         }
     }

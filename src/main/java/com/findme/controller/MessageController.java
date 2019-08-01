@@ -24,9 +24,10 @@ public class MessageController {
     }
 
     @RequestMapping(path = "/message/save", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<?> save(@RequestBody Message message) {
+    public ResponseEntity<String> save(@RequestBody Message message) {
         try {
-            return new ResponseEntity<Message>(messageService.save(message), HttpStatus.OK);
+            messageService.save(message);
+            return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
@@ -37,9 +38,10 @@ public class MessageController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/message/update", consumes = "application/json")
-    public ResponseEntity<?> update(@RequestBody Message message) {
+    public ResponseEntity<String> update(@RequestBody Message message) {
         try {
-            return new ResponseEntity<Message>(messageService.update(message), HttpStatus.OK);
+            messageService.update(message);
+            return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {

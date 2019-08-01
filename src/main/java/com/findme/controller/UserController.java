@@ -24,9 +24,10 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/user/update", consumes = "application/json")
-    public ResponseEntity<?> update(@RequestBody User user) {
+    public ResponseEntity<String> update(@RequestBody User user) {
         try {
-            return new ResponseEntity<User>(userService.update(user), HttpStatus.OK);
+            userService.update(user);
+            return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
@@ -68,11 +69,10 @@ public class UserController {
     }
 
     @RequestMapping(path = "/register-user", method = RequestMethod.POST)
-    public ResponseEntity<?> registerUser(@ModelAttribute User user) {
+    public ResponseEntity<String> registerUser(@ModelAttribute User user) {
         try {
-            return new ResponseEntity<User>(userService.save(user), HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
+            userService.save(user);
+            return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
