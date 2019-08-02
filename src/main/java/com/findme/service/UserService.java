@@ -47,7 +47,7 @@ public class UserService {
 
     private void validateUser(User user) throws Exception {
         if (user.getId() != null) {
-           // findById(user.getId());
+            findById(user.getId());
         }
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
             throw new BadRequestException("Error: first name is required");
