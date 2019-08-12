@@ -1,7 +1,9 @@
 package com.findme.helper;
 
 import com.findme.exception.BadRequestException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ArgumentHelper {
     public Long parseLongArgument(String id) throws BadRequestException {
         try {

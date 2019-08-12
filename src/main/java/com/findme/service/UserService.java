@@ -36,10 +36,23 @@ public class UserService {
         userDAO.delete(findById(id));
     }
 
-    public User findById(long id) throws Exception{
+    public User findById(long id) throws Exception {
         User user = userDAO.findById(id);
         if (user == null) {
             throw new NotFoundException("Error: user(id: " + id + ") was not found");
+        }
+
+        return user;
+    }
+
+    public User login(String email, String password) throws BadRequestException {
+        if (email.isEmpty() || password.isEmpty()) {
+            throw new BadRequestException("Error: email and password is required");
+        }
+
+        User user = userDAO.getUserByEmailAndPassword(email, password);
+        if (user == null) {
+            throw new BadRequestException("Error: email or password is incorrect");
         }
 
         return user;
