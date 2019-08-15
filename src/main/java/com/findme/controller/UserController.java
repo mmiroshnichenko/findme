@@ -1,6 +1,7 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
+import com.findme.exception.ForbiddenException;
 import com.findme.exception.NotFoundException;
 import com.findme.helper.ArgumentHelper;
 import com.findme.helper.AuthHelper;
@@ -40,6 +41,8 @@ public class UserController {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ForbiddenException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -55,6 +58,8 @@ public class UserController {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ForbiddenException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -72,6 +77,9 @@ public class UserController {
         } catch (BadRequestException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/badRequest";
+        } catch (ForbiddenException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/forbidden";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/internalError";
@@ -100,6 +108,8 @@ public class UserController {
             return new ResponseEntity<String>(headers, HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ForbiddenException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -113,8 +123,8 @@ public class UserController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "/login");
             return new ResponseEntity<String>(headers, HttpStatus.OK);
-        } catch (BadRequestException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ForbiddenException e) {
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

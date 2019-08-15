@@ -1,6 +1,7 @@
 package com.findme.helper;
 
 import com.findme.exception.BadRequestException;
+import com.findme.models.RelationshipStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,14 @@ public class ArgumentHelper {
             return paramId;
         } catch (NumberFormatException e) {
             throw new BadRequestException("Error: incorrect argument format");
+        }
+    }
+
+    public RelationshipStatus parseRelationshipStatus(String status) throws BadRequestException {
+        try {
+            return RelationshipStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Error: incorrect relationship status");
         }
     }
 }

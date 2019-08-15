@@ -2,6 +2,7 @@ package com.findme.service;
 
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
+import com.findme.exception.ForbiddenException;
 import com.findme.exception.NotFoundException;
 import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +46,14 @@ public class UserService {
         return user;
     }
 
-    public User login(String email, String password) throws BadRequestException {
+    public User login(String email, String password) throws Exception {
         if (email.isEmpty() || password.isEmpty()) {
             throw new BadRequestException("Error: email and password is required");
         }
 
         User user = userDAO.getUserByEmailAndPassword(email, password);
         if (user == null) {
-            throw new BadRequestException("Error: email or password is incorrect");
+            throw new ForbiddenException("Error: email or password is incorrect");
         }
 
         return user;
