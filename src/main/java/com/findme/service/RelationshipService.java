@@ -3,6 +3,7 @@ package com.findme.service;
 import com.findme.dao.RelationshipDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.models.Relationship;
+import com.findme.models.RelationshipStatus;
 import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,9 @@ public class RelationshipService {
     private void validateNewRelationship(Relationship relationship, User authUser) throws Exception {
         if (!authUser.getId().equals(relationship.getUserFrom().getId())) {
             throw new BadRequestException("Error: incorrect userFrom");
+        }
+        if (!relationship.getRelationshipStatus().equals(RelationshipStatus.REQUESTED)) {
+            throw new BadRequestException("Error: incorrect status");
         }
         if (relationshipDAO.getExistRelationship(authUser, userService.findById(relationship.getUserTo().getId())) != null) {
             throw new BadRequestException("Error: active relationship already exists");

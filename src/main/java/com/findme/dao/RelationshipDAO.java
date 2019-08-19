@@ -51,7 +51,7 @@ public class RelationshipDAO extends BaseDAO<Relationship> {
     public List<Relationship> getIncomeRequests(User user) {
         Query query = entityManager.createNativeQuery(FIND_INCOME_REQ, Relationship.class);
         query.setParameter(1, user.getId());
-        query.setParameter(2, RelationshipStatus.REQUESTED);
+        query.setParameter(2, RelationshipStatus.REQUESTED.toString());
 
         return query.getResultList();
     }
@@ -59,7 +59,7 @@ public class RelationshipDAO extends BaseDAO<Relationship> {
     public List<Relationship> getOutcomeRequests(User user) {
         Query query = entityManager.createNativeQuery(FIND_OUTCOME_REQ, Relationship.class);
         query.setParameter(1, user.getId());
-        query.setParameter(2, RelationshipStatus.REQUESTED);
+        query.setParameter(2, RelationshipStatus.REQUESTED.toString());
 
         return query.getResultList();
     }

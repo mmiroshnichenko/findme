@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class RelationshipController {
@@ -33,7 +35,7 @@ public class RelationshipController {
     }
 
     @RequestMapping(path = "/relationship/add", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<String> addRelationoship(HttpSession session, @RequestBody Relationship relationship) {
+    public ResponseEntity<String> addRelationship(HttpSession session, @RequestBody Relationship relationship) {
         try {
             authHelper.checkAuthentication(session);
             relationshipService.addRelationship(relationship, (User) session.getAttribute("USER"));
@@ -51,7 +53,7 @@ public class RelationshipController {
     }
 
     @RequestMapping(value = "/relationship/update", method = RequestMethod.PUT, consumes = "application/json")
-    public ResponseEntity<String> updateRelationoship(HttpSession session, @RequestBody Relationship relationship) {
+    public ResponseEntity<String> updateRelationship(HttpSession session, @RequestBody Relationship relationship) {
         try {
             authHelper.checkAuthentication(session);
             relationshipService.updateRelationship(relationship, (User) session.getAttribute("USER"));
@@ -68,5 +70,47 @@ public class RelationshipController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/income/{userId}", produces = "text/plain")
+    public String getIncomeRequests(HttpSession session, Model model, @PathVariable String userId) {
+        try {
+            authHelper.checkAuthentication(session);
+            List<Relationship> incomeRequests = relationshipService.getIncomeRequests(argumentHelper.parseLongArgument(userId));
 
+            return "incomeRequests";
+        } catch (NotFoundException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/notFound";
+        } catch (BadRequestException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/badRequest";
+        } catch (ForbiddenException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/forbidden";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/internalError";
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/outcome/{userId}", produces = "text/plain")
+    public String getOutcomeRequests(HttpSession session, Model model, @PathVariable String userId) {
+        try {
+            authHelper.checkAuthentication(session);
+            List<Relationship> outcomeRequests = relationshipService.getOutcomeRequests(argumentHelper.parseLongArgument(userId));
+
+            return "incomeRequests";
+        } catch (NotFoundException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/notFound";
+        } catch (BadRequestException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/badRequest";
+        } catch (ForbiddenException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/forbidden";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/internalError";
+        }
+    }
 }
