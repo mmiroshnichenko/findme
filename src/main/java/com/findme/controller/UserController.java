@@ -98,6 +98,11 @@ public class UserController {
         }
     }
 
+    @RequestMapping(path = "/login", method = RequestMethod.GET)
+    public String home() {
+        return "login";
+    }
+
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public ResponseEntity<String> loginUser(HttpSession session, HttpServletRequest request) {
         try {

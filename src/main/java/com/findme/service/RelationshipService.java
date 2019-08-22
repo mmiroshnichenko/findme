@@ -27,22 +27,22 @@ public class RelationshipService {
         relationshipDAO.save(relationship);
     }
 
-    public void updateRelationship(Relationship relationship, User authUser) throws Exception {
+    public void updateRelationship(Relationship relationship) throws Exception {
         validateUpdatedRelationship(relationship);
 
         relationshipDAO.update(relationship);
     }
 
-    public List<Relationship> getRelationshipsForUser(User authUser) {
-        return relationshipDAO.getRelationshipsForUser(authUser);
+    public List<Relationship> getRelationshipsForUser(Long userId) {
+        return relationshipDAO.getRelationshipsForUser(userId);
     }
 
     public List<Relationship> getIncomeRequests(Long userId) throws Exception {
-        return relationshipDAO.getIncomeRequests(userService.findById(userId));
+        return relationshipDAO.getIncomeRequests(userId);
     }
 
     public List<Relationship> getOutcomeRequests(Long userId) throws Exception {
-        return relationshipDAO.getOutcomeRequests(userService.findById(userId));
+        return relationshipDAO.getOutcomeRequests(userId);
     }
 
     private void validateUpdatedRelationship(Relationship relationship) throws Exception {
@@ -62,7 +62,7 @@ public class RelationshipService {
         if (!relationship.getRelationshipStatus().equals(RelationshipStatus.REQUESTED)) {
             throw new BadRequestException("Error: incorrect status");
         }
-        if (relationshipDAO.getExistRelationship(authUser, userService.findById(relationship.getUserTo().getId())) != null) {
+        if (relationshipDAO.getExistRelationship(authUser.getId(), relationship.getUserTo().getId()) != null) {
             throw new BadRequestException("Error: active relationship already exists");
         }
     }

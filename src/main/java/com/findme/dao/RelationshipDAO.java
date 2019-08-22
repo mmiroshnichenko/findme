@@ -2,7 +2,6 @@ package com.findme.dao;
 
 import com.findme.models.Relationship;
 import com.findme.models.RelationshipStatus;
-import com.findme.models.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +28,11 @@ public class RelationshipDAO extends BaseDAO<Relationship> {
         super(Relationship.class);
     }
 
-    public Relationship getExistRelationship(User userFrom, User userTo) {
+    public Relationship getExistRelationship(Long userFromId, Long userToId) {
         try {
             Query query = entityManager.createNativeQuery(FIND_EXIST_RELATIONSHIP, Relationship.class);
-            query.setParameter(1, userFrom.getId());
-            query.setParameter(2, userTo.getId());
+            query.setParameter(1, userFromId);
+            query.setParameter(2, userToId);
 
             return (Relationship) query.getSingleResult();
         } catch (NoResultException e) {
@@ -41,24 +40,24 @@ public class RelationshipDAO extends BaseDAO<Relationship> {
         }
     }
 
-    public List<Relationship> getRelationshipsForUser(User user) {
+    public List<Relationship> getRelationshipsForUser(Long userId) {
         Query query = entityManager.createNativeQuery(FIND_RELATIONSHIPS_FOR_USER, Relationship.class);
-        query.setParameter(1, user.getId());
+        query.setParameter(1, userId);
 
         return query.getResultList();
     }
 
-    public List<Relationship> getIncomeRequests(User user) {
+    public List<Relationship> getIncomeRequests(Long userId) {
         Query query = entityManager.createNativeQuery(FIND_INCOME_REQ, Relationship.class);
-        query.setParameter(1, user.getId());
+        query.setParameter(1, userId);
         query.setParameter(2, RelationshipStatus.REQUESTED.toString());
 
         return query.getResultList();
     }
 
-    public List<Relationship> getOutcomeRequests(User user) {
+    public List<Relationship> getOutcomeRequests(Long userId) {
         Query query = entityManager.createNativeQuery(FIND_OUTCOME_REQ, Relationship.class);
-        query.setParameter(1, user.getId());
+        query.setParameter(1, userId);
         query.setParameter(2, RelationshipStatus.REQUESTED.toString());
 
         return query.getResultList();

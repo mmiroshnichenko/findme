@@ -37,8 +37,7 @@ public class RelationshipController {
     @RequestMapping(path = "/relationship/add", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<String> addRelationship(HttpSession session, @RequestBody Relationship relationship) {
         try {
-            authHelper.checkAuthentication(session);
-            relationshipService.addRelationship(relationship, (User) session.getAttribute("USER"));
+            relationshipService.addRelationship(relationship, authHelper.getAuthUser(session));
 
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -55,8 +54,7 @@ public class RelationshipController {
     @RequestMapping(value = "/relationship/update", method = RequestMethod.PUT, consumes = "application/json")
     public ResponseEntity<String> updateRelationship(HttpSession session, @RequestBody Relationship relationship) {
         try {
-            authHelper.checkAuthentication(session);
-            relationshipService.updateRelationship(relationship, (User) session.getAttribute("USER"));
+            relationshipService.updateRelationship(relationship);
 
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -70,11 +68,11 @@ public class RelationshipController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/income/{userId}", produces = "text/plain")
-    public String getIncomeRequests(HttpSession session, Model model, @PathVariable String userId) {
+    @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/income", produces = "text/plain")
+    public String getIncomeRequests(HttpSession session, Model model) {
         try {
-            authHelper.checkAuthentication(session);
-            List<Relationship> incomeRequests = relationshipService.getIncomeRequests(argumentHelper.parseLongArgument(userId));
+            List<Relationship> incomeRequests = relationshipService.getIncomeRequests(authHelper.getAuthUser(session).getId());
+            model.addAttribute("incomeRequests", incomeRequests);
 
             return "incomeRequests";
         } catch (NotFoundException e) {
@@ -92,11 +90,11 @@ public class RelationshipController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/outcome/{userId}", produces = "text/plain")
+    @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/outcome", produces = "text/plain")
     public String getOutcomeRequests(HttpSession session, Model model, @PathVariable String userId) {
         try {
-            authHelper.checkAuthentication(session);
-            List<Relationship> outcomeRequests = relationshipService.getOutcomeRequests(argumentHelper.parseLongArgument(userId));
+            List<Relationship> outcomeRequests = relationshipService.getOutcomeRequests(authHelper.getAuthUser(session).getId());
+            model.addAttribute("outcomeRequests", outcomeRequests);
 
             return "incomeRequests";
         } catch (NotFoundException e) {
