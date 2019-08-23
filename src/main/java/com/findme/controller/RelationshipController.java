@@ -91,7 +91,7 @@ public class RelationshipController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/outcome", produces = "text/plain")
-    public String getOutcomeRequests(HttpSession session, Model model, @PathVariable String userId) {
+    public String getOutcomeRequests(HttpSession session, Model model) {
         try {
             List<Relationship> outcomeRequests = relationshipService.getOutcomeRequests(authHelper.getAuthUser(session).getId());
             model.addAttribute("outcomeRequests", outcomeRequests);

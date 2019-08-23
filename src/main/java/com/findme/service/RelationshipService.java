@@ -8,17 +8,21 @@ import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RelationshipService {
-    private UserService userService;
     private RelationshipDAO relationshipDAO;
+    private Map<RelationshipStatus, List<RelationshipStatus>> nextStatuses;
 
     @Autowired
-    public RelationshipService(UserService userService, RelationshipDAO relationshipDAO) {
-        this.userService = userService;
+    public RelationshipService(RelationshipDAO relationshipDAO) {
         this.relationshipDAO = relationshipDAO;
+
+        initNextStatuses();
     }
 
     public void addRelationship(Relationship relationship, User authUser) throws Exception {
@@ -53,6 +57,9 @@ public class RelationshipService {
         if (!relationship.getUserTo().getId().equals(dbRelationship.getUserTo().getId())) {
             throw new BadRequestException("Error: incorrect userTo");
         }
+        if (!nextStatuses.get(dbRelationship.getRelationshipStatus()).contains(relationship.getRelationshipStatus())) {
+            throw new BadRequestException("Error: incorrect relationship status");
+        }
     }
 
     private void validateNewRelationship(Relationship relationship, User authUser) throws Exception {
@@ -65,5 +72,32 @@ public class RelationshipService {
         if (relationshipDAO.getExistRelationship(authUser.getId(), relationship.getUserTo().getId()) != null) {
             throw new BadRequestException("Error: active relationship already exists");
         }
+    }
+
+    private void initNextStatuses() {
+        nextStatuses = new HashMap<>();
+
+        List<RelationshipStatus> nextRequestedStatuses = new ArrayList<>();
+        nextRequestedStatuses.add(RelationshipStatus.CANCELED);
+        nextRequestedStatuses.add(RelationshipStatus.CONFIRMED);
+        nextRequestedStatuses.add(RelationshipStatus.REJECTED);
+        nextStatuses.put(RelationshipStatus.REQUESTED, nextRequestedStatuses);
+
+        List<RelationshipStatus> nextCanceledStatuses = new ArrayList<>();
+        nextCanceledStatuses.add(RelationshipStatus.REQUESTED);
+        nextCanceledStatuses.add(RelationshipStatus.DELETED);
+        nextStatuses.put(RelationshipStatus.CANCELED, nextCanceledStatuses);
+
+        List<RelationshipStatus> nextRejectedStatuses = new ArrayList<>();
+        nextRejectedStatuses.add(RelationshipStatus.DELETED);
+        nextStatuses.put(RelationshipStatus.REJECTED, nextRejectedStatuses);
+
+        List<RelationshipStatus> nextConfirmedStatuses = new ArrayList<>();
+        nextConfirmedStatuses.add(RelationshipStatus.DELETED);
+        nextStatuses.put(RelationshipStatus.CONFIRMED, nextConfirmedStatuses);
+
+        List<RelationshipStatus> nextDeletedStatuses = new ArrayList<>();
+        nextDeletedStatuses.add(RelationshipStatus.REQUESTED);
+        nextStatuses.put(RelationshipStatus.DELETED, nextDeletedStatuses);
     }
 }
