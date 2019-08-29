@@ -16,13 +16,10 @@ import java.util.Map;
 @Service
 public class RelationshipService {
     private RelationshipDAO relationshipDAO;
-    private Map<RelationshipStatus, List<RelationshipStatus>> nextStatuses;
 
     @Autowired
     public RelationshipService(RelationshipDAO relationshipDAO) {
         this.relationshipDAO = relationshipDAO;
-
-        initNextStatuses();
     }
 
     public void addRelationship(Relationship relationship, User authUser) throws Exception {
@@ -57,7 +54,7 @@ public class RelationshipService {
         if (!relationship.getUserTo().getId().equals(dbRelationship.getUserTo().getId())) {
             throw new BadRequestException("Error: incorrect userTo");
         }
-        if (!nextStatuses.get(dbRelationship.getRelationshipStatus()).contains(relationship.getRelationshipStatus())) {
+        if (!checkNextStatus(dbRelationship.getRelationshipStatus(), relationship.getRelationshipStatus())) {
             throw new BadRequestException("Error: incorrect relationship status");
         }
     }
@@ -74,30 +71,30 @@ public class RelationshipService {
         }
     }
 
-    private void initNextStatuses() {
-        nextStatuses = new HashMap<>();
+    private boolean checkNextStatus(RelationshipStatus currentStatus, RelationshipStatus nextStatus) {
+        if (currentStatus.equals(RelationshipStatus.REQUESTED) &&
+                (nextStatus.equals(RelationshipStatus.CANCELED) || nextStatus.equals(RelationshipStatus.REJECTED)
+                        || nextStatus.equals(RelationshipStatus.CONFIRMED))) {
+            return true;
+        }
 
-        List<RelationshipStatus> nextRequestedStatuses = new ArrayList<>();
-        nextRequestedStatuses.add(RelationshipStatus.CANCELED);
-        nextRequestedStatuses.add(RelationshipStatus.CONFIRMED);
-        nextRequestedStatuses.add(RelationshipStatus.REJECTED);
-        nextStatuses.put(RelationshipStatus.REQUESTED, nextRequestedStatuses);
+        if (currentStatus.equals(RelationshipStatus.CANCELED) &&
+                (nextStatus.equals(RelationshipStatus.REQUESTED) || nextStatus.equals(RelationshipStatus.DELETED))) {
+            return true;
+        }
 
-        List<RelationshipStatus> nextCanceledStatuses = new ArrayList<>();
-        nextCanceledStatuses.add(RelationshipStatus.REQUESTED);
-        nextCanceledStatuses.add(RelationshipStatus.DELETED);
-        nextStatuses.put(RelationshipStatus.CANCELED, nextCanceledStatuses);
+        if (currentStatus.equals(RelationshipStatus.REJECTED) && nextStatus.equals(RelationshipStatus.DELETED)) {
+            return true;
+        }
 
-        List<RelationshipStatus> nextRejectedStatuses = new ArrayList<>();
-        nextRejectedStatuses.add(RelationshipStatus.DELETED);
-        nextStatuses.put(RelationshipStatus.REJECTED, nextRejectedStatuses);
+        if (currentStatus.equals(RelationshipStatus.CONFIRMED) && nextStatus.equals(RelationshipStatus.DELETED)) {
+            return true;
+        }
 
-        List<RelationshipStatus> nextConfirmedStatuses = new ArrayList<>();
-        nextConfirmedStatuses.add(RelationshipStatus.DELETED);
-        nextStatuses.put(RelationshipStatus.CONFIRMED, nextConfirmedStatuses);
+        if (currentStatus.equals(RelationshipStatus.DELETED) && nextStatus.equals(RelationshipStatus.REQUESTED)) {
+            return true;
+        }
 
-        List<RelationshipStatus> nextDeletedStatuses = new ArrayList<>();
-        nextDeletedStatuses.add(RelationshipStatus.REQUESTED);
-        nextStatuses.put(RelationshipStatus.DELETED, nextDeletedStatuses);
+        return false;
     }
 }
