@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import java.math.BigInteger;
 
 @Repository
 @Transactional
@@ -19,11 +18,11 @@ public class UserDAO extends BaseDAO<User> {
     }
 
     public int countUsersWithEmailOrPhone(String email, String phone) {
-        Query query = entityManager.createNativeQuery(findUserDuplicate, User.class);
+        Query query = entityManager.createNativeQuery(findUserDuplicate);
         query.setParameter(1, email);
         query.setParameter(2, phone);
 
-        return ((BigInteger) query.getSingleResult()).intValue();
+        return ((Number) query.getSingleResult()).intValue();
     }
 
     public User getUserByEmailAndPassword(String email, String password) {

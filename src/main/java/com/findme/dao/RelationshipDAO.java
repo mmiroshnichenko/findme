@@ -24,6 +24,12 @@ public class RelationshipDAO extends BaseDAO<Relationship> {
     private static final String FIND_OUTCOME_REQ = "SELECT * FROM RELATIONSHIP " +
             "WHERE USER_FROM_ID = ?1 AND STATUS = ?2";
 
+    private static final String FIND_COUNT_OUTCOME_REQUESTS = "SELECT COUNT(*) FROM RELATIONSHIP " +
+            "WHERE USER_FROM_ID = ?1 AND STATUS = ?2";
+
+    private static final String FIND_COUNT_FRIENDS = "SELECT COUNT(*) FROM RELATIONSHIP " +
+            "WHERE (USER_FROM_ID = ?1 OR USER_TO_ID = ?1) AND STATUS = ?2";
+
     public RelationshipDAO() {
         super(Relationship.class);
     }
@@ -61,5 +67,21 @@ public class RelationshipDAO extends BaseDAO<Relationship> {
         query.setParameter(2, RelationshipStatus.REQUESTED.toString());
 
         return query.getResultList();
+    }
+
+    public int getCountOutcomeRequests(Long userId) {
+        Query query = entityManager.createNativeQuery(FIND_COUNT_OUTCOME_REQUESTS);
+        query.setParameter(1, userId);
+        query.setParameter(2, RelationshipStatus.REQUESTED.toString());
+
+        return ((Number) query.getSingleResult()).intValue();
+    }
+
+    public int getCountFriends(Long userId) {
+        Query query = entityManager.createNativeQuery(FIND_COUNT_FRIENDS);
+        query.setParameter(1, userId);
+        query.setParameter(2, RelationshipStatus.CONFIRMED.toString());
+
+        return ((Number) query.getSingleResult()).intValue();
     }
 }

@@ -5,13 +5,11 @@ import com.findme.exception.BadRequestException;
 import com.findme.models.Relationship;
 import com.findme.models.RelationshipStatus;
 import com.findme.models.User;
+import com.findme.validator.relationship.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class RelationshipService {
@@ -24,12 +22,14 @@ public class RelationshipService {
 
     public void addRelationship(Relationship relationship, User authUser) throws Exception {
         validateNewRelationship(relationship, authUser);
+        relationship.setDateModify(new Date());
 
         relationshipDAO.save(relationship);
     }
 
     public void updateRelationship(Relationship relationship) throws Exception {
         validateUpdatedRelationship(relationship);
+        relationship.setDateModify(new Date());
 
         relationshipDAO.update(relationship);
     }
@@ -54,47 +54,43 @@ public class RelationshipService {
         if (!relationship.getUserTo().getId().equals(dbRelationship.getUserTo().getId())) {
             throw new BadRequestException("Error: incorrect userTo");
         }
-        if (!checkNextStatus(dbRelationship.getRelationshipStatus(), relationship.getRelationshipStatus())) {
-            throw new BadRequestException("Error: incorrect relationship status");
-        }
+
+        ConfirmedRelationshipValidator relationshipValidator = new ConfirmedRelationshipValidator();
+        CanceledRelationshipValidator canceledRelationshipValidator = new CanceledRelationshipValidator();
+        RejectedRelationshipValidator rejectedRelationshipValidator = new RejectedRelationshipValidator();
+        DeletedRelationshipValidator deletedRelationshipValidator = new DeletedRelationshipValidator();
+        RequestedRelationshipValidator requestedRelationshipValidator = new RequestedRelationshipValidator();
+
+        relationshipValidator.linkWith(canceledRelationshipValidator);
+        canceledRelationshipValidator.linkWith(rejectedRelationshipValidator);
+        rejectedRelationshipValidator.linkWith(deletedRelationshipValidator);
+        deletedRelationshipValidator.linkWith(requestedRelationshipValidator);
+
+        relationshipValidator.check(buildParamsForValidation(dbRelationship, relationship, relationship.getUserFrom()));
     }
 
     private void validateNewRelationship(Relationship relationship, User authUser) throws Exception {
         if (!authUser.getId().equals(relationship.getUserFrom().getId())) {
             throw new BadRequestException("Error: incorrect userFrom");
         }
-        if (!relationship.getRelationshipStatus().equals(RelationshipStatus.REQUESTED)) {
-            throw new BadRequestException("Error: incorrect status");
-        }
         if (relationshipDAO.getExistRelationship(authUser.getId(), relationship.getUserTo().getId()) != null) {
             throw new BadRequestException("Error: active relationship already exists");
         }
+
+        BaseRelationshipValidator relationshipValidator = new RequestedRelationshipValidator();
+        relationshipValidator.check(buildParamsForValidation(null, relationship, authUser));
     }
 
-    private boolean checkNextStatus(RelationshipStatus currentStatus, RelationshipStatus nextStatus) {
-        if (currentStatus.equals(RelationshipStatus.REQUESTED) &&
-                (nextStatus.equals(RelationshipStatus.CANCELED) || nextStatus.equals(RelationshipStatus.REJECTED)
-                        || nextStatus.equals(RelationshipStatus.CONFIRMED))) {
-            return true;
+    private RelationshipParams buildParamsForValidation(Relationship curRelationship, Relationship newRelationship, User user) {
+        RelationshipParams params = new RelationshipParams();
+        params.setCurrentStatus(curRelationship != null ? curRelationship.getRelationshipStatus() : RelationshipStatus.NEW);
+        params.setNextStatus(newRelationship.getRelationshipStatus());
+        if (curRelationship != null) {
+            params.setDateModify(curRelationship.getDateModify());
         }
+        params.setRequestCount(relationshipDAO.getCountOutcomeRequests(user.getId()));
+        params.setFriendsCount(relationshipDAO.getCountFriends(user.getId()));
 
-        if (currentStatus.equals(RelationshipStatus.CANCELED) &&
-                (nextStatus.equals(RelationshipStatus.REQUESTED) || nextStatus.equals(RelationshipStatus.DELETED))) {
-            return true;
-        }
-
-        if (currentStatus.equals(RelationshipStatus.REJECTED) && nextStatus.equals(RelationshipStatus.DELETED)) {
-            return true;
-        }
-
-        if (currentStatus.equals(RelationshipStatus.CONFIRMED) && nextStatus.equals(RelationshipStatus.DELETED)) {
-            return true;
-        }
-
-        if (currentStatus.equals(RelationshipStatus.DELETED) && nextStatus.equals(RelationshipStatus.REQUESTED)) {
-            return true;
-        }
-
-        return false;
+        return params;
     }
 }

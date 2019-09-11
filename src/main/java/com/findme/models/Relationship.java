@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "RELATIONSHIP")
@@ -29,4 +30,7 @@ public class Relationship {
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
     private RelationshipStatus relationshipStatus;
+
+    @Column(name = "DATE_MODIFY")
+    private Date dateModify;
 }
