@@ -55,18 +55,21 @@ public class RelationshipService {
             throw new BadRequestException("Error: incorrect userTo");
         }
 
-        ConfirmedRelationshipValidator relationshipValidator = new ConfirmedRelationshipValidator();
-        CanceledRelationshipValidator canceledRelationshipValidator = new CanceledRelationshipValidator();
-        RejectedRelationshipValidator rejectedRelationshipValidator = new RejectedRelationshipValidator();
-        DeletedRelationshipValidator deletedRelationshipValidator = new DeletedRelationshipValidator();
-        RequestedRelationshipValidator requestedRelationshipValidator = new RequestedRelationshipValidator();
+        BaseRelationshipValidator relationshipValidator = new ConfirmedRelationshipValidator();
 
-        relationshipValidator.linkWith(canceledRelationshipValidator);
-        canceledRelationshipValidator.linkWith(rejectedRelationshipValidator);
-        rejectedRelationshipValidator.linkWith(deletedRelationshipValidator);
-        deletedRelationshipValidator.linkWith(requestedRelationshipValidator);
+        relationshipValidator.linkWith(new CanceledRelationshipValidator())
+                .linkWith(new RejectedRelationshipValidator())
+                .linkWith(new DeletedRelationshipValidator())
+                .linkWith(new RequestedRelationshipValidator());
 
-        relationshipValidator.check(buildParamsForValidation(dbRelationship, relationship, relationship.getUserFrom()));
+        relationshipValidator.check(RelationshipParams.builder()
+                .currentStatus(dbRelationship.getRelationshipStatus())
+                .nextStatus(relationship.getRelationshipStatus())
+                .dateModify(dbRelationship.getDateModify())
+                .requestCount(relationshipDAO.getCountOutcomeRequests(relationship.getUserFrom().getId()))
+                .friendsCount(relationshipDAO.getCountFriends(relationship.getUserFrom().getId()))
+                .build()
+            );
     }
 
     private void validateNewRelationship(Relationship relationship, User authUser) throws Exception {
@@ -78,19 +81,12 @@ public class RelationshipService {
         }
 
         BaseRelationshipValidator relationshipValidator = new RequestedRelationshipValidator();
-        relationshipValidator.check(buildParamsForValidation(null, relationship, authUser));
-    }
 
-    private RelationshipParams buildParamsForValidation(Relationship curRelationship, Relationship newRelationship, User user) {
-        RelationshipParams params = new RelationshipParams();
-        params.setCurrentStatus(curRelationship != null ? curRelationship.getRelationshipStatus() : RelationshipStatus.NEW);
-        params.setNextStatus(newRelationship.getRelationshipStatus());
-        if (curRelationship != null) {
-            params.setDateModify(curRelationship.getDateModify());
-        }
-        params.setRequestCount(relationshipDAO.getCountOutcomeRequests(user.getId()));
-        params.setFriendsCount(relationshipDAO.getCountFriends(user.getId()));
-
-        return params;
+        relationshipValidator.check(RelationshipParams.builder()
+                .currentStatus(RelationshipStatus.NEW)
+                .nextStatus(relationship.getRelationshipStatus())
+                .requestCount(relationshipDAO.getCountOutcomeRequests(relationship.getUserFrom().getId()))
+                .friendsCount(relationshipDAO.getCountFriends(relationship.getUserFrom().getId()))
+                .build());
     }
 }

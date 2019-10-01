@@ -6,10 +6,11 @@ import java.util.List;
 
 public abstract class BaseRelationshipValidator {
     private BaseRelationshipValidator next;
-    private List<String> errors;
 
-    public void linkWith(BaseRelationshipValidator next) {
+    public BaseRelationshipValidator linkWith(BaseRelationshipValidator next) {
         this.next = next;
+
+        return next;
     }
 
     public abstract void check(RelationshipParams params) throws BadRequestException;
@@ -18,9 +19,5 @@ public abstract class BaseRelationshipValidator {
         if (next != null) {
             next.check(params);
         }
-    }
-
-    protected void addError(String error) {
-        errors.add(error);
     }
 }
