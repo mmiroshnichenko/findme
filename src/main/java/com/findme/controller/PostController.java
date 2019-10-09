@@ -3,6 +3,7 @@ package com.findme.controller;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
 import com.findme.helper.ArgumentHelper;
+import com.findme.helper.AuthHelper;
 import com.findme.models.Post;
 import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +13,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 public class PostController {
 
     private PostService postService;
     private ArgumentHelper argumentHelper;
+    private AuthHelper authHelper;
 
     @Autowired
-    public PostController(PostService postService, ArgumentHelper argumentHelper) {
+    public PostController(PostService postService, ArgumentHelper argumentHelper, AuthHelper authHelper) {
         this.postService = postService;
         this.argumentHelper = argumentHelper;
+        this.authHelper = authHelper;
     }
 
     @RequestMapping(path = "/post/save", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<String> save(@RequestBody Post post) {
+    public ResponseEntity<String> save(HttpSession session, @RequestBody Post post) {
         try {
+            authHelper.checkAuthentication(session);
             postService.save(post);
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {

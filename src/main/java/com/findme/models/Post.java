@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "POST")
@@ -32,7 +33,19 @@ public class Post {
     @Column(name = "DATE_POSTED")
     private Date datePosted;
 
+    @Column(name = "LOCATION")
+    private String location;
+
     @ManyToOne
     @JoinColumn(name = "USER_POSTED_ID", nullable = false)
     private User userPosted;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_PAGE_POSTED_ID", nullable = false)
+    private User userPagePosted;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "POST_USER_TAG", joinColumns = { @JoinColumn(name = "POST_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "USER_ID") })
+    public List<User> usersTagged;
 }

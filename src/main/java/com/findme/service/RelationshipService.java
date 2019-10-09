@@ -5,6 +5,7 @@ import com.findme.exception.BadRequestException;
 import com.findme.models.Relationship;
 import com.findme.models.RelationshipStatus;
 import com.findme.models.User;
+import com.findme.validator.relationship.BaseRelationshipValidator;
 import com.findme.validator.relationship.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,10 @@ public class RelationshipService {
 
     public List<Relationship> getOutcomeRequests(Long userId) throws Exception {
         return relationshipDAO.getOutcomeRequests(userId);
+    }
+
+    public Relationship getRelationshipBetweenUsers(long user1Id, long user2Id) {
+        return relationshipDAO.getExistRelationship(user1Id, user2Id);
     }
 
     private void validateUpdatedRelationship(Relationship relationship) throws Exception {

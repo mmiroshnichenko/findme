@@ -2,8 +2,6 @@ package com.findme.validator.relationship;
 
 import com.findme.exception.BadRequestException;
 
-import java.util.List;
-
 public abstract class BaseRelationshipValidator {
     private BaseRelationshipValidator next;
 

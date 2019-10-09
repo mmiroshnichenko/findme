@@ -4,6 +4,11 @@ import com.findme.dao.PostDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
 import com.findme.models.Post;
+import com.findme.models.Relationship;
+import com.findme.validator.post.BasePostValidator;
+import com.findme.validator.post.MessagePostValidator;
+import com.findme.validator.post.PostParams;
+import com.findme.validator.post.UserPagePostedValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,17 +20,18 @@ import java.util.Date;
 public class PostService {
     private PostDAO postDAO;
     private UserService userService;
+    private RelationshipService relationshipService;
 
     @Autowired
-    public PostService(PostDAO postDAO, UserService userService) {
+    public PostService(PostDAO postDAO, UserService userService, RelationshipService relationshipService) {
         this.postDAO = postDAO;
         this.userService = userService;
+        this.relationshipService = relationshipService;
     }
 
     public Post save(Post post) throws Exception {
-        validate(post);
-        post.setUserPosted(userService.findById(post.getUserPosted().getId()));
         post.setDatePosted(new Date());
+        validateNewPost(post);
 
         return postDAO.save(post);
     }
@@ -48,6 +54,17 @@ public class PostService {
         }
 
         return post;
+    }
+
+    private void validateNewPost(Post post) throws Exception {
+        BasePostValidator messagePostValidator = new MessagePostValidator();
+        messagePostValidator.linkWith(new UserPagePostedValidator());
+
+        messagePostValidator.check(PostParams.builder()
+            .post(post)
+            .relationship(relationshipService.getRelationshipBetweenUsers(post.getUserPosted().getId(), post.getUserPagePosted().getId()))
+            .build()
+        );
     }
 
     private void validate(Post post) throws Exception {
