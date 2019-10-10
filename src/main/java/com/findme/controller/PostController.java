@@ -5,6 +5,7 @@ import com.findme.exception.NotFoundException;
 import com.findme.helper.ArgumentHelper;
 import com.findme.helper.AuthHelper;
 import com.findme.models.Post;
+import com.findme.models.PostFilter;
 import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class PostController {
@@ -44,9 +46,23 @@ public class PostController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/post/update", consumes = "application/json")
-    public ResponseEntity<String> update(@RequestBody Post post) {
+    @RequestMapping(method = RequestMethod.GET, value = "/post/list", produces = "text/plain")
+    public String list(Model model, HttpSession session, PostFilter filter) {
         try {
+            authHelper.checkAuthentication(session);
+            List<Post> postList = postService.getList(authHelper.getAuthUser(session), filter);
+            model.addAttribute("postList", postList);
+            return "postList";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/internalError";
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/post/update", consumes = "application/json")
+    public ResponseEntity<String> update(HttpSession session, @RequestBody Post post) {
+        try {
+            authHelper.checkAuthentication(session);
             postService.update(post);
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -59,8 +75,9 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/post/delete/{postId}")
-    public ResponseEntity<String> delete(@PathVariable String postId) {
+    public ResponseEntity<String> delete(HttpSession session, @PathVariable String postId) {
         try {
+            authHelper.checkAuthentication(session);
             postService.delete(argumentHelper.parseLongArgument(postId));
             return new ResponseEntity<String>("post deleted", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -73,8 +90,9 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/post/{postId}", produces = "text/plain")
-    public String get(Model model, @PathVariable String postId) {
+    public String get(Model model, HttpSession session, @PathVariable String postId) {
         try {
+            authHelper.checkAuthentication(session);
             model.addAttribute("post", postService.findById(argumentHelper.parseLongArgument(postId)));
             return "post";
         } catch (NotFoundException e) {

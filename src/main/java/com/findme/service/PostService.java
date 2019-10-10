@@ -4,7 +4,9 @@ import com.findme.dao.PostDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
 import com.findme.models.Post;
+import com.findme.models.PostFilter;
 import com.findme.models.Relationship;
+import com.findme.models.User;
 import com.findme.validator.post.BasePostValidator;
 import com.findme.validator.post.MessagePostValidator;
 import com.findme.validator.post.PostParams;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -31,20 +34,23 @@ public class PostService {
 
     public Post save(Post post) throws Exception {
         post.setDatePosted(new Date());
-        validateNewPost(post);
+        validate(post);
 
         return postDAO.save(post);
     }
 
     public Post update(Post post) throws Exception {
         validate(post);
-        post.setUserPosted(userService.findById(post.getUserPosted().getId()));
 
         return postDAO.update(post);
     }
 
     public void delete(long id) throws Exception {
         postDAO.delete(findById(id));
+    }
+
+    public List<Post> getList(User authUser, PostFilter filter) {
+        return postDAO.getPostsByFilter(authUser.getId(), filter);
     }
 
     public Post findById(long id) throws Exception{
@@ -56,7 +62,7 @@ public class PostService {
         return post;
     }
 
-    private void validateNewPost(Post post) throws Exception {
+    private void validate(Post post) throws Exception {
         BasePostValidator messagePostValidator = new MessagePostValidator();
         messagePostValidator.linkWith(new UserPagePostedValidator());
 
@@ -65,17 +71,5 @@ public class PostService {
             .relationship(relationshipService.getRelationshipBetweenUsers(post.getUserPosted().getId(), post.getUserPagePosted().getId()))
             .build()
         );
-    }
-
-    private void validate(Post post) throws Exception {
-        if (post.getId() != null) {
-            findById(post.getId());
-        }
-        if (post.getMessage() == null || post.getMessage().isEmpty()) {
-            throw new BadRequestException("Error: message is required");
-        }
-        if (post.getUserPosted() == null) {
-            throw new BadRequestException("Error: user posted is required");
-        }
     }
 }
