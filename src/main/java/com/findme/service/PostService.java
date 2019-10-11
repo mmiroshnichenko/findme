@@ -53,6 +53,10 @@ public class PostService {
         return postDAO.getPostsByFilter(authUser.getId(), filter);
     }
 
+    public List<Post> getFeed(User authUser, int start) {
+        return postDAO.getFeed(authUser.getId(), start);
+    }
+
     public Post findById(long id) throws Exception{
         Post post = postDAO.findById(id);
         if (post == null) {

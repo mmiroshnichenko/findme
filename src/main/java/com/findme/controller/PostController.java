@@ -47,12 +47,25 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/post/list", produces = "text/plain")
-    public String list(Model model, HttpSession session, PostFilter filter) {
+    public String getList(Model model, HttpSession session, PostFilter filter) {
         try {
             authHelper.checkAuthentication(session);
             List<Post> postList = postService.getList(authHelper.getAuthUser(session), filter);
             model.addAttribute("postList", postList);
             return "postList";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "errors/internalError";
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/feed", produces = "text/plain")
+    public String getFeed(Model model, HttpSession session, @RequestParam(value = "start", required = false, defaultValue = "0") int start) {
+        try {
+            authHelper.checkAuthentication(session);
+            List<Post> feed = postService.getFeed(authHelper.getAuthUser(session), start);
+            model.addAttribute("feed", feed);
+            return "feed";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "errors/internalError";
