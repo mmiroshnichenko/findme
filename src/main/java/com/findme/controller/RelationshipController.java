@@ -4,7 +4,6 @@ import com.findme.exception.BadRequestException;
 import com.findme.exception.ForbiddenException;
 import com.findme.exception.NotFoundException;
 import com.findme.helper.ArgumentHelper;
-import com.findme.helper.AuthHelper;
 import com.findme.models.Relationship;
 import com.findme.models.User;
 import com.findme.service.RelationshipService;
@@ -25,19 +24,17 @@ import java.util.List;
 public class RelationshipController {
     private RelationshipService relationshipService;
     private ArgumentHelper argumentHelper;
-    private AuthHelper authHelper;
 
     @Autowired
-    public RelationshipController(RelationshipService relationshipService, ArgumentHelper argumentHelper, AuthHelper authHelper) {
+    public RelationshipController(RelationshipService relationshipService, ArgumentHelper argumentHelper) {
         this.relationshipService = relationshipService;
         this.argumentHelper = argumentHelper;
-        this.authHelper = authHelper;
     }
 
     @RequestMapping(path = "/relationship/add", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<String> addRelationship(HttpSession session, @RequestBody Relationship relationship) {
         try {
-            relationshipService.addRelationship(relationship, authHelper.getAuthUser(session));
+            relationshipService.addRelationship(relationship, (User) session.getAttribute("USER"));
 
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -71,7 +68,7 @@ public class RelationshipController {
     @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/income", produces = "text/plain")
     public String getIncomeRequests(HttpSession session, Model model) {
         try {
-            List<Relationship> incomeRequests = relationshipService.getIncomeRequests(authHelper.getAuthUser(session).getId());
+            List<Relationship> incomeRequests = relationshipService.getIncomeRequests((User) session.getAttribute("USER"));
             model.addAttribute("incomeRequests", incomeRequests);
 
             return "incomeRequests";
@@ -93,7 +90,7 @@ public class RelationshipController {
     @RequestMapping(method = RequestMethod.GET, value = "/relationship/requests/outcome", produces = "text/plain")
     public String getOutcomeRequests(HttpSession session, Model model) {
         try {
-            List<Relationship> outcomeRequests = relationshipService.getOutcomeRequests(authHelper.getAuthUser(session).getId());
+            List<Relationship> outcomeRequests = relationshipService.getOutcomeRequests((User) session.getAttribute("USER"));
             model.addAttribute("outcomeRequests", outcomeRequests);
 
             return "incomeRequests";

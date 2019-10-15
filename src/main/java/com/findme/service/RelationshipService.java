@@ -39,12 +39,12 @@ public class RelationshipService {
         return relationshipDAO.getRelationshipsForUser(userId);
     }
 
-    public List<Relationship> getIncomeRequests(Long userId) throws Exception {
-        return relationshipDAO.getIncomeRequests(userId);
+    public List<Relationship> getIncomeRequests(User user) throws Exception {
+        return relationshipDAO.getIncomeRequests(user.getId());
     }
 
-    public List<Relationship> getOutcomeRequests(Long userId) throws Exception {
-        return relationshipDAO.getOutcomeRequests(userId);
+    public List<Relationship> getOutcomeRequests(User user) throws Exception {
+        return relationshipDAO.getOutcomeRequests(user.getId());
     }
 
     public Relationship getRelationshipBetweenUsers(long user1Id, long user2Id) {

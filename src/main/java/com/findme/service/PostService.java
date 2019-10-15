@@ -3,20 +3,14 @@ package com.findme.service;
 import com.findme.dao.PostDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
-import com.findme.models.Post;
-import com.findme.models.PostFilter;
-import com.findme.models.Relationship;
-import com.findme.models.User;
-import com.findme.validator.post.BasePostValidator;
-import com.findme.validator.post.MessagePostValidator;
-import com.findme.validator.post.PostParams;
-import com.findme.validator.post.UserPagePostedValidator;
+import com.findme.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional
@@ -24,6 +18,8 @@ public class PostService {
     private PostDAO postDAO;
     private UserService userService;
     private RelationshipService relationshipService;
+
+    private static final String URL_REGEX = "^((http:\\/\\/|https:\\/\\/)?(www.)?(([a-zA-Z0-9-]){2,}\\.){1,4}([a-zA-Z]){2,6}(\\/([a-zA-Z-_\\/\\.0-9#:?=&;,]*)?)?)";
 
     @Autowired
     public PostService(PostDAO postDAO, UserService userService, RelationshipService relationshipService) {
@@ -67,13 +63,23 @@ public class PostService {
     }
 
     private void validate(Post post) throws Exception {
-        BasePostValidator messagePostValidator = new MessagePostValidator();
-        messagePostValidator.linkWith(new UserPagePostedValidator());
+        Relationship relationship = relationshipService.getRelationshipBetweenUsers(post.getUserPosted().getId(), post.getUserPagePosted().getId());
 
-        messagePostValidator.check(PostParams.builder()
-            .post(post)
-            .relationship(relationshipService.getRelationshipBetweenUsers(post.getUserPosted().getId(), post.getUserPagePosted().getId()))
-            .build()
-        );
+        if (!post.getUserPosted().equals(post.getUserPagePosted())
+            && (relationship == null || relationship.getRelationshipStatus().equals(RelationshipStatus.CONFIRMED))) {
+            throw new BadRequestException("Error: you can make post only in own page and friends page");
+        }
+
+        if (post.getMessage().length() == 0) {
+            throw new BadRequestException("Error: message of post cannot be empty");
+        }
+
+        if (post.getMessage().length() > 200) {
+            throw new BadRequestException("Error: message of post cannot be more than 200 symbols.");
+        }
+
+        if (Pattern.compile(URL_REGEX).matcher(post.getMessage()).find()) {
+            throw new BadRequestException("Error: message of post cannot contains URL.");
+        }
     }
 }

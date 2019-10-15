@@ -4,7 +4,6 @@ import com.findme.exception.BadRequestException;
 import com.findme.exception.ForbiddenException;
 import com.findme.exception.NotFoundException;
 import com.findme.helper.ArgumentHelper;
-import com.findme.helper.AuthHelper;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +21,16 @@ import javax.servlet.http.HttpSession;
 public class UserController {
     private UserService userService;
     private ArgumentHelper argumentHelper;
-    private AuthHelper authHelper;
 
     @Autowired
-    public UserController(UserService userService, ArgumentHelper argumentHelper, AuthHelper authHelper) {
+    public UserController(UserService userService, ArgumentHelper argumentHelper) {
         this.userService = userService;
         this.argumentHelper = argumentHelper;
-        this.authHelper = authHelper;
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/user/update", consumes = "application/json")
-    public ResponseEntity<String> update(HttpSession session, @RequestBody User user) {
+    public ResponseEntity<String> update(@RequestBody User user) {
         try {
-            authHelper.checkAuthentication(session);
             userService.update(user);
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -49,9 +45,8 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/user/delete/{userId}")
-    public ResponseEntity<String> delete(HttpSession session, @PathVariable String userId) {
+    public ResponseEntity<String> delete(@PathVariable String userId) {
         try {
-            authHelper.checkAuthentication(session);
             userService.delete(argumentHelper.parseLongArgument(userId));
             return new ResponseEntity<String>("ok", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -66,9 +61,8 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/user/{userId}", produces = "text/plain")
-    public String get(HttpSession session, Model model, @PathVariable String userId) {
+    public String get(Model model, @PathVariable String userId) {
         try {
-            authHelper.checkAuthentication(session);
             model.addAttribute("user", userService.findById(argumentHelper.parseLongArgument(userId)));
             return "profile";
         } catch (NotFoundException e) {
@@ -123,13 +117,10 @@ public class UserController {
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public ResponseEntity<String> logout(HttpSession session) {
         try {
-            authHelper.checkAuthentication(session);
             session.invalidate();
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "/login");
             return new ResponseEntity<String>(headers, HttpStatus.OK);
-        } catch (ForbiddenException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
